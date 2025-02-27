@@ -1,0 +1,9 @@
+{
+    "navigation": {
+        "home": "Accueil",
+        "about": "À propos",
+        "contact": "Contact"
+    },
+    "login": "Se connecter",
+    "logout": "Se déconnecter"
+}
