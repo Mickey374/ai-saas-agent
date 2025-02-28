@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { SchematicProvider } from "@schematichq/schematic-react";
 import SchematicWrapped from "./SchematicWrapped";
+import { ConvexClientProvider } from "./ConvexClientProvider";
 
 export const metadata: Metadata = {
   title: "Client Wrapper Component",
@@ -21,10 +22,10 @@ export default function ClientWrapper({
     throw new Error("Schematic Publishable Key is required");
 
   return (
-    <ClerkProvider>
+    <ConvexClientProvider>
       <SchematicProvider publishableKey={schematicPublishableKey}>
         <SchematicWrapped>{children}</SchematicWrapped>
       </SchematicProvider>
-    </ClerkProvider>
+    </ConvexClientProvider>
   );
 }

@@ -31,7 +31,9 @@ export default function RootLayout({
       >
         <ClientWrapper>
           <Header />
-          <main className="relative">{children}</main>
+          <main className="relative">
+            {children}
+          </main>
         </ClientWrapper>
       </body>
     </html>

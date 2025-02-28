@@ -34,7 +34,8 @@ const Header = () => {
               <SignedIn>
                 <Link href="/manage-plan" className="mr-10">
                   <Button variant="outline">
-                    {t("header:navigation:title")}
+                    {/* {t("header:navigation:title")} */}
+                    Manage Plan
                   </Button>
                 </Link>
 

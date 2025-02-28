@@ -1,0 +1,53 @@
+"use client";
+
+import { useUser } from "@clerk/nextjs";
+import Usage from "./Usage";
+import { useSchematicEntitlement } from "@schematichq/schematic-react";
+import { FeatureFlag } from "@/features/flag";
+import { useState } from "react";
+
+interface TranscriptEntry {
+  text: string;
+  timestamp: string;
+}
+
+function Transcription({ videoId }: { videoId: string }) {
+  const [transcript, setTranscript] = useState<{
+    transcript: TranscriptEntry[];
+    cache: string;
+  } | null>(null);
+
+  const { featureUsageExceeded } = useSchematicEntitlement(
+    FeatureFlag.TRANSCRIPTION
+  );
+
+  return (
+    <div className="border p-4 pb-0 rounded-xl bg-white dark:bg-gray-900 flex flex-col shadow-lg mt-4">
+      <Usage featureFlag={FeatureFlag.TRANSCRIPTION} title="Transcription" />
+
+      {/* Transcription */}
+      {!featureUsageExceeded ? (
+        <div className="flex flex-col gap-2 max-h-[250px] overflow-y-auto rounded-md p-4 bg-gray-50 dark:bg-gray-800">
+          {transcript ? (
+            transcript.transcript.map((entry, index) => (
+              <div key={index} className="flex gap-2">
+                <span className="text-sm text-gray-400 dark:text-gray-500 min-w-[50px]">
+                  {entry.timestamp}
+                </span>
+                <p className="text-sm text-gray-700 dark:text-gray-300">
+                  {entry.text}
+                </p>
+              </div>
+            ))
+          ) : (
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              No transcription available
+            </p>
+          )}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+export default Transcription;
