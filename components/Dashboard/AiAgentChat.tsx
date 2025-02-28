@@ -1,8 +1,8 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { Button } from "../ui/button";
-import {ReactMarkdown} from "react-markdown";
+// import { Button } from "../ui/button";
+// import {ReactMarkdown} from "react-markdown";
 
 function AiAgentChat({ videoId }: { videoId: string }) {
   const { messages, input, handleInputChange, handleSubmit } = useChat({

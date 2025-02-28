@@ -6,16 +6,16 @@ import Usage from "./Usage";
 import { useSchematicEntitlement } from "@schematichq/schematic-react";
 import { Clipboard } from "lucide-react";
 
-
 const copyToClipboard = (text: string) => {
   navigator.clipboard.writeText(text);
-//   toast.success("Copied to Clipboard");
+  //   toast.success("Copied to Clipboard");
 };
 
 function TitleGeneration({ videoId }: { videoId: string }) {
   const { user } = useUser();
-  const title = []; //TODO Pull from Convex DB
+  const title: { title: string; _id: string }[] = []; //TODO Pull from Convex DB
 
+  console.log(user, title, videoId);
   const { value: isTitleGenerationEnabled } = useSchematicEntitlement(
     FeatureFlag.TITLE_GENERATIONS
   );

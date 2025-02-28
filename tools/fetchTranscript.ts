@@ -13,9 +13,10 @@ const fetchTranscript = (videoId: string) =>
         ),
     }),
     execute: async ({ videoId }) => {
-        console.log("Fetching transcript for video: ", videoId);
-        return {
-            transcript: transcript.transcript,
-            cache: transcript.cache
-        }
+      console.log("Fetching transcript for video: ", videoId);
+      return {
+        transcript: "This is a transcript",
+        cache: "This was not cached",
+      };
+    },
   });

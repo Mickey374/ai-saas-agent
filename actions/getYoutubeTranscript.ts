@@ -16,8 +16,11 @@ async function fetchTranscript(videoId: string): Promise<TranscriptEntry[]> {
   try {
     const info = await youtube.getInfo(videoId);
     const transcript = await info.getTranscript();
-
-    // const transcript = TranscriptEntry[] = transcriptData.content?.body?.initial_segment()
+    // return transcript.map((entry) => ({
+    //   text: entry.text,
+    //   timestamp: entry.timestamp
+    // }));
+    return [];
   } catch (error) {
     throw new Error("Error fetching transcript: " + error);
   }

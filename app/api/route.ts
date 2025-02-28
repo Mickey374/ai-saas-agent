@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAnthropic } from "@ai-sdk/anthropic";
-import { streamText, tool } from "ai";
+import { streamText } from "ai";
 import { currentUser } from "@clerk/nextjs/server";
 
 const anthropic = createAnthropic({
@@ -16,12 +16,13 @@ export async function POST(req: Request) {
   const { messages, videoId } = await req.json();
   const user = await currentUser();
 
+  console.log(videoId);
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const systemMessage = ``;
-  
+  // const systemMessage = ``;
+
   const result = streamText({
     model,
     messages,

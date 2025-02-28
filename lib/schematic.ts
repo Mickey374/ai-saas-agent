@@ -1,2 +1,2 @@
-import { Schematic } from "@schematichq/schematic-react";
+// import { Schematic } from "@schematichq/schematic-react";
 

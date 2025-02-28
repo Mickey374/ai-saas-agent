@@ -22,7 +22,6 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { FeatureFlag } from "@/features/flag";
-import { Youtube } from "lucide-react";
 import { useParams } from "next/navigation";
 
 export default function AnalysisPage() {

@@ -4,14 +4,14 @@ import Link from "next/link";
 import React from "react";
 import AgentPulse from "../AgentPulse";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
-import { useTranslation } from "next-i18next";
+// import { useTranslation } from "next-i18next";
 // import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { Button } from "../ui/button";
 import DarkModeSwitcher from "./DarkModeSwitcher";
 import DropdownLanguage from "./DropdownLanguage";
 
 const Header = () => {
-  const { t } = useTranslation(["header"]);
+  // const { t } = useTranslation(["header"]);
   return (
     <header className="sticky z-999 left-0 right-0 top-0 bg-white/80 backdrop-blur-sm border-b shadow-header border-gray-200 px-4 md:px-0 dark:bg-boxdark dark:drop-shadow-none">
       <div className="container mx-auto">

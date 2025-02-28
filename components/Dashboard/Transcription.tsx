@@ -1,6 +1,6 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
+// import { useUser } from "@clerk/nextjs";
 import Usage from "./Usage";
 import { useSchematicEntitlement } from "@schematichq/schematic-react";
 import { FeatureFlag } from "@/features/flag";
@@ -12,10 +12,12 @@ interface TranscriptEntry {
 }
 
 function Transcription({ videoId }: { videoId: string }) {
-  const [transcript, setTranscript] = useState<{
+  const [transcript] = useState<{
     transcript: TranscriptEntry[];
     cache: string;
   } | null>(null);
+
+  console.log(videoId);
 
   const { featureUsageExceeded } = useSchematicEntitlement(
     FeatureFlag.TRANSCRIPTION
