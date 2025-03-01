@@ -37,6 +37,7 @@ export default function AnalysisPage() {
   const [video, setVideo] = useState<Doc<"videos"> | null | undefined>(
     undefined
   );
+  console.log(video);
 
   useEffect(() => {
     if (!user?.id) return;

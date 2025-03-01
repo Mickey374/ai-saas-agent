@@ -46,7 +46,7 @@ function YoutubeVideoDetails({ videoId }: { videoId: string }) {
             height={500}
             // layout="responsive"
             quality={100}
-            className="w-full rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300"
+            className="w-full rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 object-contain"
           />
         </div>
 

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createAnthropic } from "@ai-sdk/anthropic";
+// import { createAnthropic } from "@ai-sdk/anthropic";
 import { streamText } from "ai";
 import { currentUser } from "@clerk/nextjs/server";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
@@ -13,12 +13,12 @@ const googleGenerativeAI = createGoogleGenerativeAI({
   },
 });
 
-const anthropic = createAnthropic({
-  apiKey: process.env.CLAUDE_API_KEY,
-  headers: {
-    "anthropic-beta": "token-efficient-tools-2025-02-19",
-  },
-});
+// const anthropic = createAnthropic({
+//   apiKey: process.env.CLAUDE_API_KEY,
+//   headers: {
+//     "anthropic-beta": "token-efficient-tools-2025-02-19",
+//   },
+// });
 
 // const claudeModel = anthropic("claude-3-7-sonnet-20250219");
 const geminiModel = googleGenerativeAI("gemini-2.0-flash");
