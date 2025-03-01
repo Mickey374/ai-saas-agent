@@ -18,6 +18,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  transpilePackages: ["@schematichq/schematic-components"],
 };
 
 export default nextConfig;

@@ -1,6 +1,18 @@
 "use client";
 
-import { SchematicEmbed as SchematicEmbedComponent } from "@schematichq/schematic-components";
+import dynamic from "next/dynamic";
+import { Suspense } from "react";
+
+const SchematicEmbedComponent = dynamic(
+  () =>
+    import("@schematichq/schematic-components").then(
+      (mod) => mod.SchematicEmbed
+    ),
+  {
+    ssr: false,
+    loading: () => <p>Loading component...</p>,
+  }
+);
 
 const SchematicEmbed = ({
   accessToken,
@@ -9,10 +21,11 @@ const SchematicEmbed = ({
   accessToken: string;
   componentId: string;
 }) => {
-  // const token = " ... ";
-  // const componentId = "cmpn_CNnhzFbickp";
-
-  return <SchematicEmbedComponent accessToken={accessToken} id={componentId} />;
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SchematicEmbedComponent accessToken={accessToken} id={componentId} />
+    </Suspense>
+  );
 };
 
 export default SchematicEmbed;
