@@ -1,4 +1,4 @@
-import { Banknote, ChartBar, SubscriptIcon, TimerIcon } from "lucide-react";
+import { Banknote, ChartBar, TimerIcon } from "lucide-react";
 import React from "react";
 
 const DataStatsOne = () => {

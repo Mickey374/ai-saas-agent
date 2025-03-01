@@ -3,7 +3,6 @@ import { createAnthropic } from "@ai-sdk/anthropic";
 import { streamText } from "ai";
 import { currentUser } from "@clerk/nextjs/server";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { google } from "@ai-sdk/google";
 import { getVideoDetails } from "@/actions/getVideoDetails";
 import fetchTranscript from "@/tools/fetchTranscript";
 
@@ -21,7 +20,7 @@ const anthropic = createAnthropic({
   },
 });
 
-const claudeModel = anthropic("claude-3-7-sonnet-20250219");
+// const claudeModel = anthropic("claude-3-7-sonnet-20250219");
 const geminiModel = googleGenerativeAI("gemini-2.0-flash");
 
 export async function POST(req: Request) {
