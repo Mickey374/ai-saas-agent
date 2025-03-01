@@ -25,11 +25,39 @@ import {
 import { FeatureFlag } from "@/features/flag";
 import { useParams } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
+import { Doc } from "@/convex/_generated/dataModel";
+import { useEffect, useState } from "react";
+import { createOrGetVideo } from "@/actions/createOrGetVideo";
 
 export default function AnalysisPage() {
   const params = useParams<{ videoId: string }>();
   const { videoId } = params;
-  const userName = useUser()?.user?.fullName;
+  const { user } = useUser();
+
+  const [video, setVideo] = useState<Doc<"videos"> | null | undefined>(
+    undefined
+  );
+
+  useEffect(() => {
+    if (!user?.id) return;
+
+    if (!videoId) return;
+
+    const fetchVideo = async () => {
+      const response = await createOrGetVideo(videoId as string, user.id);
+
+      if (!response.success) {
+        // toast.error("Error creating or getting video", {
+        //   description: response.error,
+        //   duration: 10000,
+        // });
+      } else {
+        setVideo(response.data!);
+      }
+    };
+    fetchVideo();
+  }, [videoId, user]);
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -46,7 +74,8 @@ export default function AnalysisPage() {
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
                   <BreadcrumbPage>
-                    Welcome, <strong>{userName}</strong>
+                    Welcome,{" "}
+                    <strong className="text-primary">{user?.fullName}</strong>
                   </BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>

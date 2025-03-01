@@ -46,11 +46,18 @@ async function fetchTranscript(videoId: string): Promise<TranscriptEntry[]> {
   }
 }
 
-
 export async function getYoutubeTranscript(videoId: string) {
+  console.log("🚀 Starting getYoutubeTranscript function");
   const user = await currentUser();
 
-  if (!user?.id) throw new Error("User not found");
+  if (!user?.id) {
+    console.error("❌ User not found");
+    throw new Error("User not found");
+  }
+
+  console.log(
+    `📹 Fetching transcript for video ID: ${videoId} for user ID: ${user.id}`
+  );
 
   // Check if existing transcript is cached in the DB
   const existingTranscript = await convex.query(
@@ -59,7 +66,7 @@ export async function getYoutubeTranscript(videoId: string) {
   );
 
   if (existingTranscript) {
-    console.log(`Found cached transcript for video ${videoId}`);
+    console.log(`✅ Found cached transcript for video ${videoId}`);
     return {
       transcript: existingTranscript.transcript,
       cache: "This video has already been transcribed - Accessing cache...",
@@ -67,15 +74,20 @@ export async function getYoutubeTranscript(videoId: string) {
   }
 
   try {
+    console.log(
+      `🔄 No cached transcript found for video ${videoId}, fetching new transcript`
+    );
     const transcript = await fetchTranscript(videoId);
 
     // Store the transcript in the DB
+    console.log(`💾 Storing new transcript for video ${videoId} in the DB`);
     await convex.mutation(api.transcript.storeTranscript, {
       videoId,
       userId: user.id,
       transcript,
     });
 
+    console.log(`📊 Tracking transcription event for user ID: ${user.id}`);
     await client.track({
       event: featureFlagEvents[FeatureFlag.TRANSCRIPTION].event,
       company: {
@@ -86,13 +98,15 @@ export async function getYoutubeTranscript(videoId: string) {
       },
     });
 
+    console.log(`✅ Successfully transcribed and cached video ${videoId}`);
     return {
       transcript,
       cache: "This video was transcribed and cached in the DB",
     };
   } catch (error) {
-    console.error("Error fetching transcript", error);
-    return { // Changed from throw to return to maintain consistent return type
+    console.error("❌ Error fetching transcript", error);
+    return {
+      // Changed from throw to return to maintain consistent return type
       transcript: [],
       cache: "Error fetching transcript",
     };
