@@ -17,12 +17,12 @@ import {
 import { NavMain } from "@/components/nav-main";
 import { NavProjects } from "@/components/nav-projects";
 import { NavUser } from "@/components/nav-user";
-import { TeamSwitcher } from "@/components/team-switcher";
+// import { TeamSwitcher } from "@/components/team-switcher";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarHeader,
+  // SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
 
@@ -51,7 +51,7 @@ const data = {
   ],
   navMain: [
     {
-      title: "Playground",
+      title: "Today",
       url: "#",
       icon: SquareTerminal,
       isActive: true,
@@ -62,7 +62,7 @@ const data = {
       ],
     },
     {
-      title: "Models",
+      title: "Yesterday",
       url: "#",
       icon: Bot,
       items: [
@@ -72,7 +72,7 @@ const data = {
       ],
     },
     {
-      title: "Documentation",
+      title: "Last 7 Days",
       url: "#",
       icon: BookOpen,
       items: [
@@ -83,7 +83,7 @@ const data = {
       ],
     },
     {
-      title: "Settings",
+      title: "Past 30 Days",
       url: "#",
       icon: Settings2,
       items: [
@@ -108,12 +108,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       {...props}
       className="mt-16 h-[calc(100vh-64px)] overflow-y-auto border-r"
     >
-      <SidebarHeader>
+      {/* <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
-      </SidebarHeader>
+      </SidebarHeader> */}
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        {/* <NavProjects projects={data.projects} /> */}
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

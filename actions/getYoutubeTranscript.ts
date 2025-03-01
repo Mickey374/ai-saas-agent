@@ -1,11 +1,26 @@
+import { api } from "@/convex/_generated/api";
+import { FeatureFlag, featureFlagEvents } from "@/features/flag";
+import { client } from "@/lib/schematic";
 import { currentUser } from "@clerk/nextjs/server";
+import { ConvexHttpClient } from "convex/browser";
 import { Innertube } from "youtubei.js";
+
+if (!process.env.NEXT_PUBLIC_CONVEX_URL) {
+  throw new Error("NEXT_PUBLIC_CONVEX_URL is not defined");
+}
+const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL);
 
 const youtube = await Innertube.create({
   lang: "en",
   location: "US",
   retrieve_player: false,
 });
+
+function formatTimeStamp(start_ms: number): string {
+  const minutes = Math.floor(start_ms / 60000);
+  const seconds = (start_ms % 60000) / 1000;
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+}
 
 interface TranscriptEntry {
   text: string;
@@ -15,28 +30,71 @@ interface TranscriptEntry {
 async function fetchTranscript(videoId: string): Promise<TranscriptEntry[]> {
   try {
     const info = await youtube.getInfo(videoId);
-    const transcript = await info.getTranscript();
-    // return transcript.map((entry) => ({
-    //   text: entry.text,
-    //   timestamp: entry.timestamp
-    // }));
-    return [];
+    const transcriptData = await info.getTranscript();
+
+    const transcript: TranscriptEntry[] =
+      transcriptData.transcript.content?.body?.initial_segments.map(
+        (segment) => ({
+          text: segment.snippet.text ?? "N/A",
+          timestamp: formatTimeStamp(Number(segment.start_ms)),
+        })
+      ) ?? [];
+
+    return transcript;
   } catch (error) {
     throw new Error("Error fetching transcript: " + error);
   }
 }
+
+
 export async function getYoutubeTranscript(videoId: string) {
   const user = await currentUser();
 
-  if (!user?.id) {
-    console;
-    return new Error("User not found");
+  if (!user?.id) throw new Error("User not found");
+
+  // Check if existing transcript is cached in the DB
+  const existingTranscript = await convex.query(
+    api.transcript.getTranscriptByVideoId,
+    { videoId, userId: user.id }
+  );
+
+  if (existingTranscript) {
+    console.log(`Found cached transcript for video ${videoId}`);
+    return {
+      transcript: existingTranscript.transcript,
+      cache: "This video has already been transcribed - Accessing cache...",
+    };
   }
 
-  const transcript = await fetchTranscript(videoId);
-  return {
-    transcript,
-    cache: "This was not cached",
-  };
-  return new Response("Success");
+  try {
+    const transcript = await fetchTranscript(videoId);
+
+    // Store the transcript in the DB
+    await convex.mutation(api.transcript.storeTranscript, {
+      videoId,
+      userId: user.id,
+      transcript,
+    });
+
+    await client.track({
+      event: featureFlagEvents[FeatureFlag.TRANSCRIPTION].event,
+      company: {
+        id: user.id,
+      },
+      user: {
+        id: user.id,
+      },
+    });
+
+    return {
+      transcript,
+      cache: "This video was transcribed and cached in the DB",
+    };
+  } catch (error) {
+    console.error("Error fetching transcript", error);
+    return { // Changed from throw to return to maintain consistent return type
+      transcript: [],
+      cache: "Error fetching transcript",
+    };
+  }
 }

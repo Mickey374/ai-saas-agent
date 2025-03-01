@@ -7,6 +7,7 @@ import TitleGeneration from "@/components/Dashboard/TitleGeneration";
 import Transcription from "@/components/Dashboard/Transcription";
 import Usage from "@/components/Dashboard/Usage";
 import YoutubeVideoDetails from "@/components/Dashboard/YoutubeVideoDetails";
+import DataStatsOne from "@/components/DataStats/DataStatsOne";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -23,11 +24,12 @@ import {
 } from "@/components/ui/sidebar";
 import { FeatureFlag } from "@/features/flag";
 import { useParams } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 
 export default function AnalysisPage() {
   const params = useParams<{ videoId: string }>();
   const { videoId } = params;
-
+  const userName = useUser()?.user?.fullName;
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -39,35 +41,30 @@ export default function AnalysisPage() {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Building Your Application
-                  </BreadcrumbLink>
+                  <BreadcrumbLink href="#">Your Dashboard</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
+                  <BreadcrumbPage>
+                    Welcome, <strong>{userName}</strong>
+                  </BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="grid auto-rows-min gap-4 md:grid-cols-3 lg:grid-cols-5">
-            {/* <div className="aspect-video max-w-auto rounded-xl bg-muted/50" />
-            <div className="aspect-video max-w-auto rounded-xl bg-muted/50" />
-            <div className="aspect-video max-w-auto rounded-xl bg-muted/50" />
-            <div className="aspect-video max-w-auto rounded-xl bg-muted/50" />
-            <div className="aspect-video max-w-auto rounded-xl bg-muted/50" /> */}
-            <Usage
-              featureFlag={FeatureFlag.ANALYSE_VIDEO}
-              title="Analyze Video"
-              className="aspect-video max-w-auto rounded-xl bg-muted/50 p-2"
-            />
+          {/* <div className="grid auto-rows-min gap-4 md:grid-cols-3 lg:grid-cols-3">
             <div className="aspect-video max-w-auto rounded-xl bg-muted/50" />
             <div className="aspect-video max-w-auto rounded-xl bg-muted/50" />
             <div className="aspect-video max-w-auto rounded-xl bg-muted/50" />
             <div className="aspect-video max-w-auto rounded-xl bg-muted/50" />
-          </div>
+            <div className="aspect-video max-w-auto rounded-xl bg-muted/50" />
+            <DataStatsOne />
+            <div className="aspect-video max-w-auto rounded-xl bg-muted/50" />
+            <div className="aspect-video max-w-auto rounded-xl bg-muted/50" />
+          </div> */}
+          <DataStatsOne />
           <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4">
               <div className="order-2 lg:order-1 flex flex-col p-2">
@@ -91,8 +88,8 @@ export default function AnalysisPage() {
                 {/* Transcription  */}
                 <Transcription videoId={videoId} />
               </div>
-              <div className="order-1 lg:order-2 p-2">
-                <p>Right Side</p>
+              <div className="order-1 lg:order-2 p-2 lg:sticky lg:top-20 h-[500px] md:h-[calc(100vh-6rem)]">
+                {/* AI Agent Chat */}
                 <AiAgentChat videoId={videoId} />
               </div>
             </div>
