@@ -1,3 +1,5 @@
+"use server";
+
 import { api } from "@/convex/_generated/api";
 import { FeatureFlag, featureFlagEvents } from "@/features/flag";
 import { client } from "@/lib/schematic";

@@ -5,6 +5,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { getVideoDetails } from "@/actions/getVideoDetails";
 import fetchTranscript from "@/tools/fetchTranscript";
+import generateImage from "@/tools/generateImage";
 
 const googleGenerativeAI = createGoogleGenerativeAI({
   apiKey: process.env.GEMINI_API_KEY,
@@ -48,6 +49,7 @@ Format responses for Notion compatibility including headings paraphrasing the to
     messages: [{ content: systemMessage, role: "system" }, ...messages],
     tools: {
       fetchTranscript: fetchTranscript,
+      generateImage: generateImage(videoId, user.id),
     },
   });
 

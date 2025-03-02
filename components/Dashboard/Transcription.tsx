@@ -4,7 +4,8 @@
 import Usage from "./Usage";
 import { useSchematicEntitlement } from "@schematichq/schematic-react";
 import { FeatureFlag } from "@/features/flag";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { getYoutubeTranscript } from "@/actions/getYoutubeTranscript";
 
 interface TranscriptEntry {
   text: string;
@@ -12,7 +13,7 @@ interface TranscriptEntry {
 }
 
 function Transcription({ videoId }: { videoId: string }) {
-  const [transcript] = useState<{
+  const [transcript, setTranscript] = useState<{
     transcript: TranscriptEntry[];
     cache: string;
   } | null>(null);
@@ -22,6 +23,26 @@ function Transcription({ videoId }: { videoId: string }) {
   const { featureUsageExceeded } = useSchematicEntitlement(
     FeatureFlag.TRANSCRIPTION
   );
+
+  const handleGenerateTranscription = useCallback(
+    async (videoId: string) => {
+      if (featureUsageExceeded) {
+        console.log(
+          "Feature usage exceeded. Kindly upgrade your plan to continue using this feature."
+        );
+        return;
+      }
+
+      const response = await getYoutubeTranscript(videoId);
+
+      setTranscript(response);
+    },
+    [featureUsageExceeded]
+  );
+
+  useEffect(() => {
+    handleGenerateTranscription(videoId);
+  }, [videoId, handleGenerateTranscription]);
 
   return (
     <div className="border p-4 pb-0 rounded-xl bg-white dark:bg-gray-900 flex flex-col shadow-lg">

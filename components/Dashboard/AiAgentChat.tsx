@@ -1,8 +1,12 @@
 "use client";
 
-import { useChat } from "@ai-sdk/react";
+import { Message, useChat } from "@ai-sdk/react";
 import { Button } from "../ui/button";
 import Markdown from "react-markdown";
+import { useSchematicFlag } from "@schematichq/schematic-react";
+import { FeatureFlag } from "@/features/flag";
+import { LetterText } from "lucide-react";
+import { stat } from "fs";
 
 interface ToolInvocation {
   toolCallId: string;
@@ -21,12 +25,65 @@ const formatToolInvocation = (part: ToolPart) => {
 };
 
 function AiAgentChat({ videoId }: { videoId: string }) {
-  const { messages, input, handleInputChange, handleSubmit } = useChat({
-    maxSteps: 5,
-    body: {
-      videoId: videoId,
-    },
-  });
+  const { messages, input, handleInputChange, handleSubmit, append, status } =
+    useChat({
+      maxSteps: 5,
+      body: {
+        videoId: videoId,
+      },
+    });
+
+  const isScriptGenerationEnabled = useSchematicFlag(
+    FeatureFlag.SCRIPT_GENERATION
+  );
+  const isImageGenerationEnabled = useSchematicFlag(
+    FeatureFlag.IMAGE_GENERATION
+  );
+  const isTitleGenerationEnabled = useSchematicFlag(
+    FeatureFlag.TITLE_GENERATIONS
+  );
+  const isVideoAnalysisEnabled = useSchematicFlag(FeatureFlag.ANALYSE_VIDEO);
+
+  const generateScript = async () => {
+    const randomId = Math.random().toString(36).substring(2, 15);
+
+    const userMessage: Message = {
+      id: `generate-script-${randomId}`,
+      role: "user",
+      content: `Generate a step-by-step shooting script for this video that I can use on my own channel
+                  to produce a video that is similar to this one. Don't do any other steps such as generating
+                  an image, just generate the script only!`,
+    };
+
+    append(userMessage);
+  };
+
+  const generateImage = async () => {
+    const randomId = Math.random().toString(36).substring(2, 15);
+
+    const userMessage: Message = {
+      id: `generate-image-${randomId}`,
+      role: "user",
+      content: `Generate an image or images that I can use as a thumbnail for this video. 
+                  Don't do any other steps such as generating a script, just generate the image or images only!`,
+    };
+
+    append(userMessage);
+  };
+
+  const generateTitle = async () => {
+    const randomId = Math.random().toString(36).substring(2, 15);
+
+    const userMessage: Message = {
+      id: `generate-title-${randomId}`,
+      role: "user",
+      content: `Generate a title for this video that I can use on my own channel. 
+                  Don't do any other steps such as generating a script, just generate the title only!`,
+    };
+
+    append(userMessage);
+  };
+
   return (
     <div className="flex flex-col gap-4 h-full">
       <div className="hidden lg:block px-4 pb-3 border-b border-gray-300 dark:border-gray-700">
@@ -131,18 +188,101 @@ function AiAgentChat({ videoId }: { videoId: string }) {
               type="text"
               value={input}
               onChange={handleInputChange}
-              placeholder="Type your message here..."
+              placeholder={
+                !isVideoAnalysisEnabled
+                  ? "Upgrade to analyse video"
+                  : "Ask any question about your video!"
+              }
               className="flex-1 px-4 py-2 text-sm border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             <Button
-              // disabled
               type="submit"
+              disabled={
+                status === "streaming" ||
+                status === "submitted" ||
+                !isVideoAnalysisEnabled
+              }
               onClick={handleSubmit}
               className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white dark:text-gray-800 text-sm rounded-lg dark:bg-gray-200 dark:hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Send
+              {status === "streaming"
+                ? "Analyzing is replying"
+                : status === "submitted"
+                  ? "AI is thinking"
+                  : "Send"}
             </Button>
           </form>
+
+          <div className="flex gap-2">
+            <button
+              className="text-xs xl:text-sm w-full flex items-center justify-center gap-2 py-2 px-4 
+              bg-gray-100 hover:bg-gray-200 
+              dark:bg-gray-800 dark:hover:bg-gray-700 
+              rounded-full transition-colors 
+              disabled:opacity-50 disabled:cursor-not-allowed
+              dark:disabled:opacity-70
+              text-gray-900 dark:text-gray-100
+              dark:border dark:border-gray-600"
+              onClick={generateScript}
+              type="button"
+              disabled={!isScriptGenerationEnabled}
+            >
+              <LetterText className="w-4 h-4 dark:text-gray-300" />
+              {isScriptGenerationEnabled ? (
+                <span>Generate Script</span>
+              ) : (
+                <span className="dark:text-gray-400">
+                  Upgrade to generate a script
+                </span>
+              )}
+            </button>
+
+            <button
+              className="text-xs xl:text-sm w-full flex items-center justify-center gap-2 py-2 px-4 
+              bg-gray-100 hover:bg-gray-200 
+              dark:bg-gray-800 dark:hover:bg-gray-700 
+              rounded-full transition-colors 
+              disabled:opacity-50 disabled:cursor-not-allowed
+              dark:disabled:opacity-70
+              text-gray-900 dark:text-gray-100
+              dark:border dark:border-gray-600"
+              onClick={generateTitle}
+              type="button"
+              disabled={!isScriptGenerationEnabled}
+            >
+              <LetterText className="w-4 h-4 dark:text-gray-300" />
+              {isScriptGenerationEnabled ? (
+                <span>Generate Title</span>
+              ) : (
+                <span className="dark:text-gray-400">
+                  Upgrade to generate a title
+                </span>
+              )}
+            </button>
+
+            <button
+              className="text-xs xl:text-sm w-full flex items-center justify-center gap-2 py-2 px-4 
+              bg-gray-100 hover:bg-gray-200 
+              dark:bg-gray-800 dark:hover:bg-gray-700 
+              rounded-full transition-colors 
+              disabled:opacity-50 disabled:cursor-not-allowed
+              dark:disabled:opacity-70
+              text-gray-900 dark:text-gray-100
+              dark:border dark:border-gray-600"
+              onClick={generateImage}
+              type="button"
+              disabled={!isScriptGenerationEnabled}
+            >
+              <LetterText className="w-4 h-4 dark:text-gray-300" />
+              {isScriptGenerationEnabled ? (
+                <span>Generate Image</span>
+              ) : (
+                <span className="dark:text-gray-400">
+                  Upgrade to generate an image or images
+                </span>
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </div>

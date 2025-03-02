@@ -18,6 +18,7 @@ export async function getVideoDetails(videoId: string) {
     });
 
     const videoDetails = videoResponse.data.items?.[0];
+    // console.log(JSON.stringify(videoDetails, null, 2));
 
     if (!videoDetails) throw new Error("Video not found");
 
@@ -39,7 +40,7 @@ export async function getVideoDetails(videoId: string) {
       title: videoDetails.snippet?.title || "Unknown Title",
       description: videoDetails.snippet?.description || "No Description",
       publishedAt: videoDetails.snippet?.publishedAt || "Unknown Date",
-      thumbnail: videoDetails.snippet?.thumbnails?.default?.url || "",
+      thumbnail: videoDetails.snippet?.thumbnails?.maxres?.url || "",
       viewCount: videoDetails.statistics?.viewCount || "0",
       likeCount: videoDetails.statistics?.likeCount || "0",
       dislikeCount: videoDetails.statistics?.dislikeCount || "0",
