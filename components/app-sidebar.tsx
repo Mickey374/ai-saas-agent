@@ -129,7 +129,7 @@ import * as React from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useUser } from "@clerk/nextjs";
-import { format, differenceInDays } from "date-fns";
+import { differenceInDays } from "date-fns";
 import {
   Sidebar,
   SidebarContent,
@@ -201,7 +201,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
     const groupedVideos = groupVideosByDate(videos);
     return Object.entries(groupedVideos)
-      .filter(([_, items]) => items.length > 0)
+      .filter(([, items]) => items.length > 0)
       .map(([title, items]) => ({
         title: `${title} (${items.length})`,
         url: "#",

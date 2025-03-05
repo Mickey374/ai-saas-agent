@@ -41,12 +41,12 @@ function AiAgentChat({ videoId }: { videoId: string }) {
   const isScriptGenerationEnabled = useSchematicFlag(
     FeatureFlag.SCRIPT_GENERATION
   );
-  const isImageGenerationEnabled = useSchematicFlag(
-    FeatureFlag.IMAGE_GENERATION
-  );
-  const isTitleGenerationEnabled = useSchematicFlag(
-    FeatureFlag.TITLE_GENERATIONS
-  );
+  // const isImageGenerationEnabled = useSchematicFlag(
+  //   FeatureFlag.IMAGE_GENERATION
+  // );
+  // const isTitleGenerationEnabled = useSchematicFlag(
+  //   FeatureFlag.TITLE_GENERATIONS
+  // );
 
   // Scroll to Bottom
   useEffect(() => {

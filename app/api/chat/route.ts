@@ -8,7 +8,6 @@ import fetchTranscript from "@/tools/fetchTranscript";
 import generateImage from "@/tools/generateImage";
 import generateVideoDetails from "@/tools/getVideoDetails";
 import getVideoId from "@/tools/getVideoId";
-import { url } from "inspector";
 import generateTitle from "@/tools/generateTitle";
 
 const googleGenerativeAI = createGoogleGenerativeAI({

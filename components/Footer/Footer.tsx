@@ -9,7 +9,7 @@ import AgentPulse from "../AgentPulse";
 
 export default function FooterSection() {
   return (
-    <footer className="w-full bg-background px-4">
+    <footer className="w-full px-4 bg-gray-700">
       <div className="mx-auto max-w-container">
         <Footer>
           <FooterContent>
