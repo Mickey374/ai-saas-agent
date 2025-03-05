@@ -30,3 +30,15 @@ export const createVideoEntry = mutation({
     return videoId;
   },
 });
+
+export const listVideos = query({
+  args: {
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("videos")
+      .withIndex("by_user_id", (g) => g.eq("userId", args.userId))
+      .collect();
+  },
+});

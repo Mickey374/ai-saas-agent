@@ -5,8 +5,9 @@ import { Button } from "../ui/button";
 import Markdown from "react-markdown";
 import { useSchematicFlag } from "@schematichq/schematic-react";
 import { FeatureFlag } from "@/features/flag";
-import { LetterText } from "lucide-react";
-import { stat } from "fs";
+import { BotIcon, LetterText } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { toast } from "sonner";
 
 interface ToolInvocation {
   toolCallId: string;
@@ -25,6 +26,10 @@ const formatToolInvocation = (part: ToolPart) => {
 };
 
 function AiAgentChat({ videoId }: { videoId: string }) {
+  // Scroll to Bottom Logic
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const messageContainerRef = useRef<HTMLDivElement>(null);
+
   const { messages, input, handleInputChange, handleSubmit, append, status } =
     useChat({
       maxSteps: 5,
@@ -42,6 +47,46 @@ function AiAgentChat({ videoId }: { videoId: string }) {
   const isTitleGenerationEnabled = useSchematicFlag(
     FeatureFlag.TITLE_GENERATIONS
   );
+
+  // Scroll to Bottom
+  useEffect(() => {
+    if (bottomRef.current && messageContainerRef.current) {
+      messageContainerRef.current.scrollTop =
+        messageContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  // Handle Toast Notification
+  useEffect(() => {
+    let toastId;
+
+    switch (status) {
+      case "submitted":
+        toastId = toast("AI is thinking", {
+          id: toastId,
+          icon: <BotIcon className="w-4 h-4" />,
+        });
+        break;
+      case "streaming":
+        toastId = toast("AI is replying", {
+          id: toastId,
+          icon: <BotIcon className="w-4 h-4" />,
+        });
+        break;
+      case "error":
+        toastId = toast("AI encountered an error", {
+          id: toastId,
+          icon: <BotIcon className="w-4 h-4" />,
+        });
+        break;
+      case "ready":
+        toast.dismiss(toastId);
+        break;
+      default:
+        break;
+    }
+  }, [status]);
+
   const isVideoAnalysisEnabled = useSchematicFlag(FeatureFlag.ANALYSE_VIDEO);
 
   const generateScript = async () => {
@@ -64,8 +109,8 @@ function AiAgentChat({ videoId }: { videoId: string }) {
     const userMessage: Message = {
       id: `generate-image-${randomId}`,
       role: "user",
-      content: `Generate an image or images that I can use as a thumbnail for this video. 
-                  Don't do any other steps such as generating a script, just generate the image or images only!`,
+      content: `Generate an image or thumbnail for this video. 
+                  Don't do any other steps such as generating a script, just generate the image only!`,
     };
 
     append(userMessage);
@@ -93,7 +138,7 @@ function AiAgentChat({ videoId }: { videoId: string }) {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 overflow-y-auto p-4" ref={messageContainerRef}>
         <div className="space-y-6">
           {messages.length === 0 && (
             <div className="flex items-center justify-center h-full min-h-[200px]">
@@ -159,24 +204,10 @@ function AiAgentChat({ videoId }: { videoId: string }) {
                     <Markdown>{message.content}</Markdown>
                   </div>
                 )}
-                {/* {message.parts.map((part, i) =>
-                  part.type === "text" ? (
-                    <div
-                      key={i}
-                      className="prose dark:prose-invert prose-sm max-w-none"
-                    >
-                      <Markdown>{message.content}</Markdown>
-                    </div>
-                  ) : part.type === "tool-invocation" ? (
-                    <div
-                      key={i}
-                      className="bg-white/50 dark:bg-gray-800 rounded-lg p-2 space-y-2 text-gray-800 dark:text-gray-200"
-                    ></div>
-                  ) : null
-                )} */}
               </div>
             </div>
           ))}
+          <div ref={bottomRef} />
         </div>
       </div>
 
@@ -206,7 +237,7 @@ function AiAgentChat({ videoId }: { videoId: string }) {
               className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white dark:text-gray-800 text-sm rounded-lg dark:bg-gray-200 dark:hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {status === "streaming"
-                ? "Analyzing is replying"
+                ? "AI is replying"
                 : status === "submitted"
                   ? "AI is thinking"
                   : "Send"}

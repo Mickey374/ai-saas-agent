@@ -18,7 +18,7 @@ function Transcription({ videoId }: { videoId: string }) {
     cache: string;
   } | null>(null);
 
-  console.log(videoId);
+  // console.log(videoId);
 
   const { featureUsageExceeded } = useSchematicEntitlement(
     FeatureFlag.TRANSCRIPTION
@@ -45,7 +45,7 @@ function Transcription({ videoId }: { videoId: string }) {
   }, [videoId, handleGenerateTranscription]);
 
   return (
-    <div className="border p-4 pb-0 rounded-xl bg-white dark:bg-gray-900 flex flex-col shadow-lg">
+    <div className="border p-4 pb-0 rounded-xl bg-white dark:bg-gray-900 flex flex-col shadow-lg mt-4">
       <div className="mb-4">
         <Usage featureFlag={FeatureFlag.TRANSCRIPTION} title="Transcription" />
       </div>

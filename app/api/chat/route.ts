@@ -6,6 +6,10 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { getVideoDetails } from "@/actions/getVideoDetails";
 import fetchTranscript from "@/tools/fetchTranscript";
 import generateImage from "@/tools/generateImage";
+import generateVideoDetails from "@/tools/getVideoDetails";
+import getVideoId from "@/tools/getVideoId";
+import { url } from "inspector";
+import generateTitle from "@/tools/generateTitle";
 
 const googleGenerativeAI = createGoogleGenerativeAI({
   apiKey: process.env.GEMINI_API_KEY,
@@ -50,6 +54,9 @@ Format responses for Notion compatibility including headings paraphrasing the to
     tools: {
       fetchTranscript: fetchTranscript,
       generateImage: generateImage(videoId, user.id),
+      getVideoDetails: generateVideoDetails,
+      extractVideoId: getVideoId,
+      generateTitle: generateTitle,
     },
   });
 

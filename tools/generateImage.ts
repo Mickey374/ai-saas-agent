@@ -6,9 +6,11 @@ import { z } from "zod";
 
 const generateImage = (videoId: string, userId: string) =>
   tool({
-    description: "Generate an image from a YouTube video transcript.",
+    description: `Generate an image for this YouTube video ${videoId} transcript.`,
     parameters: z.object({
-      prompt: z.string().describe("The prompt to generate an image for."),
+      prompt: z
+        .string()
+        .describe("The prompt for which to generate an image for."),
       videoId: z
         .string()
         .describe(

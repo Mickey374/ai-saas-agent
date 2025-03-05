@@ -5,17 +5,19 @@ import { useUser } from "@clerk/nextjs";
 import Usage from "./Usage";
 import { useSchematicEntitlement } from "@schematichq/schematic-react";
 import { Clipboard } from "lucide-react";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { toast } from "sonner";
 
 const copyToClipboard = (text: string) => {
   navigator.clipboard.writeText(text);
-  //   toast.success("Copied to Clipboard");
+    toast.success("Copied to Clipboard");
 };
 
 function TitleGeneration({ videoId }: { videoId: string }) {
   const { user } = useUser();
-  const title: { title: string; _id: string }[] = []; //TODO Pull from Convex DB
+  const titles = useQuery(api.titles.list, { videoId, userId: user?.id ?? "" });
 
-  console.log(user, title, videoId);
   const { value: isTitleGenerationEnabled } = useSchematicEntitlement(
     FeatureFlag.TITLE_GENERATIONS
   );
@@ -28,7 +30,7 @@ function TitleGeneration({ videoId }: { videoId: string }) {
 
       {/* Simple horizontal scroll for now */}
       <div className="space-y-3 mt-4 max-h-[280px] overflow-y-auto">
-        {title?.map((title, index) => (
+        {titles?.map((title, index) => (
           <div
             key={index}
             className="group relative p-4 rounded-lg border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 hover:border-blue-100 dark:hover:border-blue-300 transition-all duration-300"
@@ -51,7 +53,7 @@ function TitleGeneration({ videoId }: { videoId: string }) {
       </div>
 
       {/* If No Titles Generated */}
-      {!title?.length && !!isTitleGenerationEnabled && (
+      {!titles?.length && !!isTitleGenerationEnabled && (
         <div className="text-center py-8 px-4 mt-4 border-2 border-dashed bg-gray-100 dark:bg-gray-800 rounded-lg w-full">
           <p className="text-gray-400 dark:text-gray-500">
             No Titles Generated for this video
